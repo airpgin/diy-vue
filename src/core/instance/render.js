@@ -9,12 +9,9 @@ export function renderMixin(Vue) {
     const vm = this
 
     const { render, _parentVnode } = vm.$options
-    console.log(render);
 
     let vnode
     vnode = render.call(vm._renderProxy, vm.$createElement)
-    console.log('-----------');
-    console.log('render 中', vnode);
 
     return vnode
   }

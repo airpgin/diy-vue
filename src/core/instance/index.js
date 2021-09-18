@@ -11,7 +11,7 @@ function Vue (options) {
 }
 
 initMixin(Vue)
-lifecycleMixin(Vue)
 renderMixin(Vue)
+lifecycleMixin(Vue)
 
 export default Vue

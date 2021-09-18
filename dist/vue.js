@@ -44,7 +44,6 @@
       const vm = this;
 
       const { render, _parentVnode } = vm.$options;
-      console.log(render);
 
       let vnode;
       vnode = render.call(vm._renderProxy, vm.$createElement);
@@ -86,8 +85,16 @@
   function noop (a, b, c) { }
 
   function lifecycleMixin (Vue) {
-    Vue.prototype._update = function (vnode, hydratig) {
+    Vue.prototype._update = function (vnode, hydrating) {
       console.log('_updata 的作用是将 虚拟DOM 转换为 真实DOM');
+      console.log(vnode);
+      console.log(hydrating);
+      const vm = this;
+      const prevNode = vm._node;
+      if (!prevNode) {
+        // 第一次挂载
+        vm.__patch__(vm.$el, vnode, hydrating, false);
+      }
     };
   }
 
@@ -103,6 +110,7 @@
 
     updateComponent();
 
+
     new Watcher(vm, updateComponent, noop, {}, true);
 
     return vm
@@ -117,8 +125,8 @@
   }
 
   initMixin(Vue);
-  lifecycleMixin(Vue);
   renderMixin(Vue);
+  lifecycleMixin(Vue);
 
   function query (el) {
     if (typeof el === 'string') {
@@ -131,6 +139,15 @@
       return el
     }
   }
+
+  function createPatchFunction (backend) {
+    console.log('createPatchFunction 函数被调用了');
+    return () => { }
+  }
+
+  const patch = createPatchFunction();
+
+  Vue.prototype.__patch__ = patch;
 
   Vue.prototype.$mount = function (el, hydrating) {
     el = query(el);
