@@ -4,8 +4,39 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Vue = factory());
 }(this, (function () { 'use strict';
 
+  let initProxy;
+
+  initProxy = function initProxy (vm) {
+    vm._renderProxy = vm;
+  };
+
+  class VNode {
+    constructor(tag, data, children, text, ele, context, componentOptions, asyncFactory) {
+      this.tag = tag;
+      this.data = data;
+      this.children = children;
+      this.context = context;
+    }
+  }
+
+  function createElement (context, tag, data, children, normalizationType, alwaysNormalize) {
+    console.log('createElement 函数执行了');
+    return _createElement(context, tag, data, children)
+  }
+
+  function _createElement (context, tag, data, children, normalizationType) {
+
+    let vnode;
+
+    if (typeof tag === 'string') {
+      // TODO
+      vnode = new VNode(tag, data, children, undefined, undefined, context);
+      return vnode
+    }
+  }
+
   function initRender(vm) {
-    vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true);
+    vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c);
   }
 
   function renderMixin(Vue) {
@@ -37,6 +68,7 @@
         vm.$options = options;
       }
 
+      initProxy(vm);
       initRender(vm);
 
       if (vm.$options.el) {
