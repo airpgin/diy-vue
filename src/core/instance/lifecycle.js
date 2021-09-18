@@ -17,7 +17,7 @@ export function mountComponent (vm, el, hydrating) {
     vm._update(vm._render(), hydrating)
   }
 
-  // updateComponent()
+  updateComponent()
 
   new Watcher(vm, updateComponent, noop, {}, true)
 

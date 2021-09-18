@@ -1,3 +1,6 @@
+import { initProxy } from './proxy'
+import { initRender } from './render'
+
 export function initMixin (Vue) {
   Vue.prototype._init = function (options) {
     const vm = this
@@ -10,6 +13,9 @@ export function initMixin (Vue) {
       console.log('不是组件');
       vm.$options = options
     }
+
+    initProxy(vm)
+    initRender(vm)
 
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)

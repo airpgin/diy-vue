@@ -4,6 +4,26 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Vue = factory());
 }(this, (function () { 'use strict';
 
+  function initRender(vm) {
+    vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true);
+  }
+
+  function renderMixin(Vue) {
+    Vue.prototype._render = function () {
+      const vm = this;
+
+      const { render, _parentVnode } = vm.$options;
+      console.log(render);
+
+      let vnode;
+      vnode = render.call(vm._renderProxy, vm.$createElement);
+      console.log('-----------');
+      console.log('render 中', vnode);
+
+      return vnode
+    };
+  }
+
   function initMixin (Vue) {
     Vue.prototype._init = function (options) {
       const vm = this;
@@ -17,23 +37,11 @@
         vm.$options = options;
       }
 
+      initRender(vm);
+
       if (vm.$options.el) {
         vm.$mount(vm.$options.el);
       }
-    };
-  }
-
-  function renderMixin(Vue) {
-    Vue.prototype._render = function () {
-      const vm = this;
-
-      const { render, _parentVnode } = vm.$options;
-
-      let vnode;
-      vnode = render.call(vm._renderProxy, vm.$createElement);
-      console.log('render 中', vnode);
-
-      return vnode
     };
   }
 

@@ -16,7 +16,9 @@
     const msg = document.getElementById('msg')
     new Vue({
       el: '#app',
-      template: msg
+      render(createElement) {
+        return createElement('div', 'Hello World')
+      }
     })
   </script>
 </body>
