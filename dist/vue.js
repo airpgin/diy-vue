@@ -25,8 +25,14 @@
 
   function renderMixin(Vue) {
     Vue.prototype._render = function () {
-      let vnode = {tag: 'div', content: 'Hello World'};
-      console.log('当前 vmode: ', vnode);
+      const vm = this;
+
+      const { render, _parentVnode } = vm.$options;
+
+      let vnode;
+      vnode = render.call(vm._renderProxy, vm.$createElement);
+      console.log('render 中', vnode);
+
       return vnode
     };
   }
@@ -118,6 +124,7 @@
       if (template) {
         let render = function () {
           console.log('将 template 转换成 渲染函数');
+          return {tag: 'div', content: 'Hello World!'}
         };
         options.render = render;
       }

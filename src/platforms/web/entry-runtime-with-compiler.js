@@ -29,6 +29,7 @@ Vue.prototype.$mount = function (el, hydrating) {
     if (template) {
       let render = function () {
         console.log('将 template 转换成 渲染函数');
+        return {tag: 'div', content: 'Hello World!'}
       }
       options.render = render
     }
