@@ -14,12 +14,14 @@
     constructor(tag, data, children, text, ele, context, componentOptions, asyncFactory) {
       this.tag = tag;
       this.data = data;
+      
+      this.ele = ele;
       this.children = children;
       this.context = context;
     }
   }
 
-  function createElement (context, tag, data, children, normalizationType, alwaysNormalize) {
+  function createElement$1 (context, tag, data, children, normalizationType, alwaysNormalize) {
     console.log('createElement 函数执行了');
     return _createElement(context, tag, data, children)
   }
@@ -36,7 +38,7 @@
   }
 
   function initRender(vm) {
-    vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c);
+    vm.$createElement = (a, b, c, d) => createElement$1(vm, a, b, c);
   }
 
   function renderMixin(Vue) {
@@ -47,8 +49,6 @@
 
       let vnode;
       vnode = render.call(vm._renderProxy, vm.$createElement);
-      console.log('-----------');
-      console.log('render 中', vnode);
 
       return vnode
     };
@@ -83,6 +83,14 @@
   }
 
   function noop (a, b, c) { }
+
+  function isUndef (v) {
+    return v === undefined || v === null
+  }
+
+  function isDef (v) {
+    return v !== undefined && v !== null
+  }
 
   function lifecycleMixin (Vue) {
     Vue.prototype._update = function (vnode, hydrating) {
@@ -140,12 +148,79 @@
     }
   }
 
-  function createPatchFunction (backend) {
-    console.log('createPatchFunction 函数被调用了');
-    return () => { }
+  function createElement (tagName, vnode) {
+    const ele = document.createElement(tagName);
+    return ele
   }
 
-  const patch = createPatchFunction();
+  function appendChild (node, child) {
+    node.appendChild(child);
+  }
+
+  function parentNode (node) {
+    console.log(node);
+    return node.parentNode
+  }
+
+  function tagName (node) {
+    return node.tagName
+  }
+
+  var nodeOps = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    createElement: createElement,
+    appendChild: appendChild,
+    parentNode: parentNode,
+    tagName: tagName
+  });
+
+  function createPatchFunction (backend) {
+
+    const { modules, nodeOps } = backend;
+
+    function createEle (vnode, parentEle) {
+      vnode.data;
+      vnode.children;
+      const tag = vnode.tag;
+      console.log(tag);
+      if (isDef(tag)) {
+        vnode.ele = nodeOps.createElement(tag, vnode);
+        insert(parentEle, vnode.ele);
+      }
+    }
+
+    function insert (parent, ele, ref) {
+      if (isDef(parent)) {
+        if (isDef(ref)) ; else {
+          nodeOps.appendChild(parent, ele);
+        }
+      }
+    }
+
+    function emptyNodeAt(ele) {
+      return new VNode(nodeOps.tagName(ele).toLowerCase(), {}, [], undefined, ele)
+    }
+
+
+    return function patch (oldVnode, vnode, hydrating, removeOnly) {
+      if (isUndef(oldVnode)) {
+        console.log('没有老 vnode');
+      } else {
+        const isRealElement = isDef(oldVnode.nodeType);
+        if (isRealElement) {
+          oldVnode = emptyNodeAt(oldVnode);
+        }
+        const oldEle = oldVnode.ele;
+        const parentEle = nodeOps.parentNode(oldEle);
+        console.log(parentEle, '---');
+        createEle(vnode, parentEle);
+      }
+    }
+  }
+
+  const modules = '';
+
+  const patch = createPatchFunction({nodeOps, modules});
 
   Vue.prototype.__patch__ = patch;
 
